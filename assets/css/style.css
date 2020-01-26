@@ -229,3 +229,34 @@ body {
 a .pageNumber {
 	color: #4285f4;
 }
+
+.mainResultsSection .imageResults {
+	margin: 20px;
+}
+
+.gridItem img {
+	min-width: 200px;
+	min-width: 50px;
+	visibility: hidden;
+}
+
+.gridItem {
+	position: relative;
+}
+
+.gridItem .details {
+	visibility: hidden;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	overflow: hidden;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: #fff;
+	font-size: 11px;
+	padding: 3px;
+}
+
+.gridItem:hover .details {
+	visibility: visible;
+}

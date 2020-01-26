@@ -34,8 +34,9 @@ function insertLink($url, $title, $description, $keywords)
 function insertImage($url, $src, $alt, $title)
 {
     global $con;
-    $query = $con->prepare("INSERT INTO images(siteUrl, imageUrl, alt ,title) 
-    VALUES(:siteUrl,:imageUrl,:alt,:title)");
+
+    $query = $con->prepare("INSERT INTO images(siteUrl, imageUrl, alt, title)
+							VALUES(:siteUrl, :imageUrl, :alt, :title)");
 
     $query->bindParam(":siteUrl", $url);
     $query->bindParam(":imageUrl", $src);
@@ -66,14 +67,20 @@ function createLink($src, $url)
 
 function getDetails($url)
 {
+
     global $alreadyFoundImages;
+
     $parser = new DomDocumentParser($url);
-    $titleArray = $parser->getTitletags();
-    if (sizeof($titleArray) == 0 || $titleArray->item(0) == null) {
+
+    $titleArray = $parser->getTitleTags();
+
+    if (sizeof($titleArray) == 0 || $titleArray->item(0) == NULL) {
         return;
     }
+
     $title = $titleArray->item(0)->nodeValue;
     $title = str_replace("\n", "", $title);
+
     if ($title == "") {
         return;
     }
@@ -84,9 +91,11 @@ function getDetails($url)
     $metasArray = $parser->getMetatags();
 
     foreach ($metasArray as $meta) {
+
         if ($meta->getAttribute("name") == "description") {
             $description = $meta->getAttribute("content");
         }
+
         if ($meta->getAttribute("name") == "keywords") {
             $keywords = $meta->getAttribute("content");
         }
@@ -95,12 +104,13 @@ function getDetails($url)
     $description = str_replace("\n", "", $description);
     $keywords = str_replace("\n", "", $keywords);
 
+
     if (linkExists($url)) {
-        echo "$url already existed<br>";
+        echo "$url already exists<br>";
     } else if (insertLink($url, $title, $description, $keywords)) {
-        echo "SUCCESS:$url<br>";
+        echo "SUCCESS: $url<br>";
     } else {
-        echo "ERROR: Failed to unsert $url<br>";
+        echo "ERROR: Failed to insert $url<br>";
     }
 
     $imageArray = $parser->getImages();
@@ -114,13 +124,14 @@ function getDetails($url)
         }
 
         $src = createLink($src, $url);
+
         if (!in_array($src, $alreadyFoundImages)) {
             $alreadyFoundImages[] = $src;
+
             insertImage($url, $src, $alt, $title);
         }
     }
 }
-
 
 
 function followLinks($url)
@@ -146,8 +157,6 @@ function followLinks($url)
             $crawling[] = $href;
 
             getDetails($href);
-        } else {
-            return;
         }
     };
 
@@ -157,5 +166,5 @@ function followLinks($url)
     }
 };
 
-$startUrl = 'http://www.bbc.co.uk';
+$startUrl = 'https://stackoverflow.com';
 followLinks($startUrl);
